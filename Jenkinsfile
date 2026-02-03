@@ -7,21 +7,11 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/vpsubhash1302/jenkins-docker-pipeline.git'
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                sh 'pip3 install -r requirements.txt'
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh 'pytest'
+                git branch: 'main',
+                    url: 'https://github.com/vpsubhash1302/jenkins-docker-pipeline.git'
             }
         }
 
@@ -31,7 +21,15 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Run Tests Inside Docker') {
+            steps {
+                sh '''
+                docker run --rm $IMAGE_NAME pytest
+                '''
+            }
+        }
+
+        stage('Run Application Container') {
             steps {
                 sh '''
                 docker rm -f $CONTAINER_NAME || true
@@ -43,10 +41,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build & Deployment Successful'
+            echo '✅ CI/CD Pipeline completed successfully'
         }
         failure {
-            echo '❌ Build Failed'
+            echo '❌ Pipeline failed'
         }
     }
 }
