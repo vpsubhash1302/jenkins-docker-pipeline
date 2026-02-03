@@ -15,6 +15,18 @@ pipeline {
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                sh 'apt install python3-pytest'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'pytest test_app.py'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t $IMAGE_NAME .'
